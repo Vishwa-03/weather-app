@@ -146,7 +146,7 @@ const Dashboard = () => {
   const handleLogout = async () => {
     await logout();
     if (!error) {
-      navigate("/auth");
+      navigate("/");
       toast.success("Logout success");
     }
   };
