@@ -16,9 +16,10 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Tooltip,
+  useMediaQuery,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 import CloudIcon from "@mui/icons-material/Cloud";
 import SearchBar from "../components/SearchBar";
 import WeatherCard from "../components/WeatherCard";
@@ -29,7 +30,12 @@ import { useNavigate } from "react-router";
 import userLogout from "./Auth/userLogout";
 import toast from "react-hot-toast";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-import { deleteCity, fetchSavedCities, fetchUserInfo, saveCity } from "../Firebase"; // Import Firestore functions
+import {
+  deleteCity,
+  fetchSavedCities,
+  fetchUserInfo,
+  saveCity,
+} from "../Firebase"; // Import Firestore functions
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import WeatherAIRecommender from "./WeatherAIRecommender";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
@@ -146,7 +152,7 @@ const Dashboard = () => {
   const handleLogout = async () => {
     await logout();
     if (!error) {
-      navigate("/auth");
+      navigate("/");
       toast.success("Logout success");
     }
   };
@@ -155,63 +161,161 @@ const Dashboard = () => {
   const handleCloseModal = () => setOpenModal(false);
   const handleOpenRecommenderModal = () => setOpenRecommenderModal(true);
   const handleCloseRecommenderModal = () => setOpenRecommenderModal(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppBar position="static" elevation={0}>
-        <Toolbar sx={{ justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <CloudIcon sx={{ mr: 2, fontSize: 32 }} />
-            <Typography
-              color="white"
-              variant="h5"
-              component="div"
-              sx={{ fontWeight: 600 }}
-            >
-              Weather Dashboard
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography color="white" variant="h6" component="div" sx={{ mr: 2 }}>
-              Welcome, {userName}
-            </Typography>
-            <Tooltip title="Weather AI Recommendation">
-              <IconButton
-                color="inherit"
-                onClick={handleOpenRecommenderModal}
-                sx={{ mr: 2 }}
+      {isMobile ? (
+        <AppBar
+          position="static"
+          elevation={0}
+          sx={{
+            alignItems: "center",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
+            alignmentBaseline:"central" 
+          }}
+        >
+          <Toolbar
+            sx={{
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              width: "100%",
+            }}
+          >
+            {/* Left Section */}
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+              <CloudIcon sx={{ mr: 1, fontSize: 24 }} />
+              <Typography
+                color="white"
+                // variant="h6"
+                fontSize={"19.5px"}
+                component="div"
+                sx={{ fontWeight: 600 }}
               >
-                <AssistantIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Saved Cities">
-              <IconButton
-                color="inherit"
-                onClick={handleOpenModal}
-                sx={{ mr: 2 }}
-              >
-                <BookmarkIcon />
-              </IconButton>
-            </Tooltip>
-            <Button
-              onClick={handleLogout}
-              variant="outlined"
-              color="inherit"
-              startIcon={<ExitToAppIcon />}
+                Weather Dashboard
+              </Typography>
+            </Box>
+
+            {/* Right Section */}
+            <Box
               sx={{
-                borderRadius: "20px",
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                flexWrap: "wrap",
+                
               }}
             >
-              Logout
-            </Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
+              <Typography
+                color="white"
+                variant="body1"
+                component="div"
+                sx={{ mr: 2, display: { xs: "none", md: "block" } }}
+              >
+                Welcome, {userName}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Tooltip title="Weather AI Recommendation">
+                  <IconButton
+                    color="inherit"
+                    onClick={handleOpenRecommenderModal}
+                    sx={{ mr: 1 }}
+                  >
+                    <AssistantIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Saved Cities">
+                  <IconButton
+                    color="inherit"
+                    onClick={handleOpenModal}
+                    sx={{ mr: 1 }}
+                  >
+                    <BookmarkIcon />
+                  </IconButton>
+                </Tooltip>
+                <ExitToAppIcon onClick={handleLogout} />
+              </Box>
+            </Box>
+          </Toolbar>
+        </AppBar>
+      ) : (
+        <AppBar position="static" elevation={0} sx={{ alignItems: "center" }}>
+          <Toolbar
+            sx={{
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              width: "100%",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mb: isMobile ? 1 : 0,
+              }}
+            >
+              <CloudIcon sx={{ mr: 1, fontSize: 24 }} />
+              <Typography
+                color="white"
+                variant="h6"
+                component="div"
+                sx={{ fontWeight: 600 }}
+              >
+                Weather Dashboard
+              </Typography>
+            </Box>
+            <Box
+              sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
+            >
+              <Typography
+                color="white"
+                variant={isMobile ? "body1" : "h6"}
+                component="div"
+                sx={{ mr: 1 }}
+              >
+                Welcome, {userName}
+              </Typography>
+              <Tooltip title="Weather AI Recommendation">
+                <IconButton
+                  color="inherit"
+                  onClick={handleOpenRecommenderModal}
+                  sx={{ mr: 1 }}
+                >
+                  <AssistantIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Saved Cities">
+                <IconButton
+                  color="inherit"
+                  onClick={handleOpenModal}
+                  sx={{ mr: 1 }}
+                >
+                  <BookmarkIcon />
+                </IconButton>
+              </Tooltip>
+              <Button
+                onClick={handleLogout}
+                variant="outlined"
+                color="inherit"
+                startIcon={<ExitToAppIcon />}
+                sx={{
+                  borderRadius: "20px",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                  fontSize: isMobile ? "0.8rem" : "1rem",
+                }}
+              >
+                Logout
+              </Button>
+            </Box>
+          </Toolbar>
+        </AppBar>
+      )}
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <>
           <Box sx={{ textAlign: "center", mb: 4 }}>

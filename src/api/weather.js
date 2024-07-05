@@ -2,7 +2,7 @@
 import axios from 'axios'; 
 
 const API_KEY =process.env.REACT_APP_KEY_WEATHER   // Replace with your WeatherAPI API key
-const BASE_URL = 'http://api.weatherapi.com/v1'; 
+const BASE_URL = 'https://api.weatherapi.com/v1'; 
 console.log(API_KEY)
 export const fetchWeather = async (city) => {
   try {
